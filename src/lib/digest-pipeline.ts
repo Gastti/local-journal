@@ -47,15 +47,14 @@ type DigestDraft = {
   tags: string[]
 }
 
-async function generateDigest(articles: RawArticle[], since: Date): Promise<DigestDraft> {
-  const dateLabel = since.toLocaleDateString('es-AR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+async function generateDigest(articles: RawArticle[], since: Date, until: Date): Promise<DigestDraft> {
+  const fmt = (d: Date) =>
+    d.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Argentina/Buenos_Aires' })
+  const dayLabel = until.toLocaleDateString('es-AR', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+    timeZone: 'America/Argentina/Buenos_Aires',
   })
+  const dateLabel = `${dayLabel}, ${fmt(since)} – ${fmt(until)}`
 
   const payload = articles.map((a) => ({
     title: a.title,
@@ -95,17 +94,20 @@ ${JSON.stringify(payload, null, 2)}`
   return parseJSON<DigestDraft>(raw)
 }
 
-export async function runDigestPipeline(supabase: SupabaseClient): Promise<DigestResult> {
-  // Last 24 hours from now
+export async function runDigestPipeline(
+  supabase: SupabaseClient,
+  window?: { from: Date; to: Date },
+): Promise<DigestResult> {
   const now = new Date()
-  const since = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+  const since = window?.from ?? new Date(now.getTime() - 24 * 60 * 60 * 1000)
+  const until = window?.to ?? now
 
-  // Fetch articles scraped in the last 24 hours
+  // Fetch articles in the time window
   const { data, error } = await supabase
     .from('raw_articles')
     .select('*')
     .gte('fetched_at', since.toISOString())
-    .lte('fetched_at', now.toISOString())
+    .lte('fetched_at', until.toISOString())
     .order('fetched_at', { ascending: false })
     .limit(30)
 
@@ -126,7 +128,7 @@ export async function runDigestPipeline(supabase: SupabaseClient): Promise<Diges
   // Generate digest
   let draft: DigestDraft
   try {
-    draft = await generateDigest(articles, since)
+    draft = await generateDigest(articles, since, until)
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
     return { post_generated: false, articles_used: articles.length, error: msg }
