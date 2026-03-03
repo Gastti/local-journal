@@ -40,16 +40,13 @@ export default async function HomePage() {
             style={{ fontFamily: F.ui, color: 'var(--color-ink-muted)' }}>
             Noticias locales · Generadas con IA
           </p>
-          <h1
-            className="font-bold leading-none mb-3"
-            style={{
-              fontFamily: F.headline,
-              fontSize: 'clamp(3.5rem, 10vw, 7rem)',
-              letterSpacing: '-0.01em',
-            }}
-          >
-            El Chenque
-          </h1>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/elchenque-logo.png"
+            alt="El Chenque"
+            className="mx-auto mb-3"
+            style={{ maxHeight: 'clamp(3.5rem, 10vw, 7rem)', width: 'auto' }}
+          />
           <div className="flex items-center gap-4 mt-3">
             <div className="h-px flex-1 bg-[var(--color-ink)]" />
             <p className="text-[10px] tracking-[0.3em] uppercase shrink-0"

@@ -24,7 +24,7 @@ const franklin = Libre_Franklin({
 })
 
 export const metadata: Metadata = {
-  title: 'Local Journal',
+  title: 'El Chenque - Noticias locales generadas con IA',
   description: 'Noticias locales generadas con IA',
 }
 
