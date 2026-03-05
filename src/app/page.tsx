@@ -136,7 +136,7 @@ export default async function HomePage() {
                   {catPosts.map((post) => (
                     <div
                       key={post.id}
-                      className="min-w-[78vw] sm:min-w-[44vw] md:min-w-0 shrink-0 snap-start flex flex-col"
+                      className="min-w-[calc(100vw-5rem)] sm:min-w-[44vw] md:min-w-0 shrink-0 snap-start flex flex-col"
                     >
                       <PostCard post={post} />
                     </div>
