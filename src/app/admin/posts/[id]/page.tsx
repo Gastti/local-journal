@@ -1,10 +1,10 @@
 export const dynamic = 'force-dynamic'
 
 import { createClient } from '@/lib/supabase/server'
-import type { Post, RawArticle } from '@/types/database'
+import type { Post, RawArticle, Category } from '@/types/database'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { publishPost, archivePost, deletePost } from '../actions'
+import { publishPost, archivePost, deletePost, changeCategory } from '../actions'
 
 const STATUS_LABELS: Record<string, string> = {
   draft: 'Borrador',
@@ -32,6 +32,12 @@ export default async function PostDetailPage(props: {
 
   if (!postData) notFound()
   const post = postData as Post
+
+  const { data: categoriesData } = await supabase
+    .from('categories')
+    .select('id, name')
+    .order('name')
+  const categories = (categoriesData ?? []) as Pick<Category, 'id' | 'name'>[]
 
   // Fetch source articles
   const { data: postSources } = await supabase
@@ -148,6 +154,34 @@ export default async function PostDetailPage(props: {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Change category */}
+      {categories.length > 0 && (
+        <div className="border-t border-[var(--color-rule)] pt-6 mb-8">
+          <div className="text-[9px] tracking-[0.25em] uppercase text-[var(--color-rule)] mb-3">
+            Cambiar categoría
+          </div>
+          <form action={changeCategory} className="flex items-center gap-3">
+            <input type="hidden" name="id" value={post.id} />
+            <select
+              name="category_id"
+              defaultValue={post.category_id ?? ''}
+              className="text-sm border border-[var(--color-rule)] bg-[var(--color-paper)] text-[var(--color-ink)] px-3 py-2 focus:outline-none focus:border-[var(--color-ink)]"
+            >
+              <option value="" disabled>Seleccionar categoría</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+            <button
+              type="submit"
+              className="text-[11px] tracking-[0.15em] uppercase border border-[var(--color-ink)] text-[var(--color-ink)] px-4 py-2 hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)] transition-colors"
+            >
+              Guardar
+            </button>
+          </form>
         </div>
       )}
 

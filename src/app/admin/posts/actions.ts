@@ -38,3 +38,14 @@ export async function deletePost(formData: FormData) {
   revalidatePath('/admin/posts')
   redirect('/admin/posts')
 }
+
+export async function changeCategory(formData: FormData) {
+  const supabase = await createClient()
+  const id = String(formData.get('id'))
+  const categoryId = String(formData.get('category_id'))
+
+  await supabase.from('posts').update({ category_id: categoryId }).eq('id', id)
+
+  revalidatePath('/admin/posts')
+  revalidatePath(`/admin/posts/${id}`)
+}
