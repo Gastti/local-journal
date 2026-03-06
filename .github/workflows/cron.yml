@@ -1,0 +1,16 @@
+name: Cron — Scrape & Generate
+
+on:
+  schedule:
+    - cron: '0 15 * * *'  # mediodía Argentina (UTC-3)
+    - cron: '0 3 * * *'   # medianoche Argentina (UTC-3)
+  workflow_dispatch:       # permite ejecutarlo manualmente desde GitHub
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger pipeline
+        run: |
+          curl --fail -X GET "${{ secrets.APP_URL }}/api/cron" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
