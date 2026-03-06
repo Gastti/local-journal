@@ -25,7 +25,7 @@ body {
 
 /* Article markdown body — EB Garamond referenciado directamente */
 .article-body {
-  font-family: var(--font-garamond), Georgia, serif;
+  font-family: var(--font-franklin), 'Helvetica Neue', sans-serif;
   font-size: 1.125rem;
   line-height: 1.85;
   color: var(--color-ink);
