@@ -88,19 +88,22 @@ async function generateDigest(
   }))
 
   const prompt = `Sos un redactor de un diario local argentino.
-Escribí un resumen periodístico de las noticias del ${dateLabel}, pero cada noticia debe estar un poco.
-El post debe repasar los principales temas del día de forma cohesiva detalladamente, no como una lista.
+Escribí un resumen periodístico de las noticias del ${dateLabel}.
+El post debe repasar los principales temas del día de forma cohesiva y detallada, no como una lista.
 
-Donde corresponda, incluí imágenes inline en el markdown usando este formato exacto:
+Donde corresponda, podés incluir imágenes en el markdown usando este formato:
 ![descripción breve](url_de_la_imagen)
-Solo usá URLs de image_url que aparecen en los artículos fuente. No inventes URLs.
+IMPORTANTE sobre las imágenes:
+- Usá únicamente URLs de image_url que aparecen en los artículos fuente. No inventes URLs.
+- Las imágenes deben estar solas en su propia línea, separadas del texto por una línea en blanco antes y después.
+- Nunca pongas una imagen inmediatamente después de dos puntos ni pegada a una oración. Siempre en su propia línea.
 
 Devolvé un JSON con exactamente estas claves:
 {
   "title": "titular del resumen (ej: 'Las noticias del [fecha]')",
   "slug": "slug-url-amigable",
   "excerpt": "resumen de 1-2 oraciones del día",
-  "content": "cuerpo completo en markdown con imágenes inline (usar \\n para saltos de línea)",
+  "content": "cuerpo completo en markdown (usar \\n para saltos de línea)",
   "tags": ["tag1", "tag2", "tag3"]
 }
 

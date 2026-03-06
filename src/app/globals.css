@@ -97,26 +97,10 @@ body {
 }
 
 .article-body img {
-  float: right;
-  width: 38%;
+  width: 100%;
   height: auto;
-  margin: 0.4em 0 1em 1.8em;
+  margin: 1.8em 0;
   display: block;
-  object-fit: cover;
-}
-
-@media (max-width: 640px) {
-  .article-body img {
-    float: none;
-    width: 100%;
-    margin: 1.4em 0;
-  }
-}
-
-.article-body::after {
-  content: '';
-  display: table;
-  clear: both;
 }
 
 /* ── Scroll swipe hint (homepage, mobile) ──────────────────────────────────── */
