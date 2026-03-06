@@ -146,7 +146,7 @@ ${JSON.stringify(payload, null, 2)}`
   return (result.groups ?? []).filter((g) => Array.isArray(g?.ids) && g.ids.length > 0)
 }
 
-const CANONICAL_CATEGORIES = ['Política', 'Economía', 'Seguridad', 'Sociedad', 'Deportes', 'Cultura'] as const
+const CANONICAL_CATEGORIES = ['Política', 'Economía', 'Seguridad', 'Sociedad', 'Deportes', 'Cultura', 'Educación'] as const
 
 async function generatePost(groupArticles: RawArticle[]): Promise<PostDraft> {
   const articlesPayload = groupArticles.map((a) => ({
