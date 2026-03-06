@@ -86,8 +86,9 @@ function parseJSON<T>(raw: string): T {
   if (end !== -1) text = text.slice(0, end + 1)
 
   // 3. Try to parse as-is
+  let parsed: unknown
   try {
-    return JSON.parse(text) as T
+    parsed = JSON.parse(text)
   } catch {
     // 4. Escape raw control characters that appear inside JSON strings
     const sanitized = text.replace(/[\x00-\x1F]/g, (c) => {
@@ -96,8 +97,15 @@ function parseJSON<T>(raw: string): T {
       if (c === '\t') return '\\t'
       return ''
     })
-    return JSON.parse(sanitized) as T
+    parsed = JSON.parse(sanitized)
   }
+
+  // 5. Unwrap array wrapper: model sometimes returns [{ ... }] instead of { ... }
+  if (Array.isArray(parsed) && parsed.length > 0) {
+    parsed = parsed[0]
+  }
+
+  return parsed as T
 }
 
 async function askJSON<T>(prompt: string, maxTokens: number): Promise<T> {
@@ -123,14 +131,19 @@ async function groupArticles(articles: RawArticle[]): Promise<ArticleGroup[]> {
 Agrupalos por tema: artículos que cubren el mismo evento deben ir juntos.
 Los que no tienen relación van solos en su propio grupo.
 
-Devolvé un JSON con esta forma exacta (objeto con clave "groups"):
+IMPORTANTE: Devolvé ÚNICAMENTE un objeto JSON (no un array). La estructura debe ser exactamente:
 {"groups": [{"ids": ["id1", "id2"], "topic": "descripción breve"}, ...]}
+
+Reglas:
+- El valor de "topic" debe ser texto plano sin comillas ni caracteres especiales.
+- Todos los ids deben ser strings válidos.
+- No incluyas valores null ni campos extra.
 
 Artículos:
 ${JSON.stringify(payload, null, 2)}`
 
   const result = await askJSON<{ groups: ArticleGroup[] }>(prompt, 1024)
-  return result.groups
+  return (result.groups ?? []).filter((g) => Array.isArray(g?.ids) && g.ids.length > 0)
 }
 
 async function generatePost(groupArticles: RawArticle[]): Promise<PostDraft> {
